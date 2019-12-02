@@ -9,10 +9,18 @@ import (
 
 func main() {
 	// connect to the cluster
-	cluster := gocql.NewCluster("192.168.1.1", "192.168.1.2", "192.168.1.3")
+	// local laptop need to connect ssh tunnel
+	// example ssh ssh.host -L 9042:cassandra.host:9042
+
+	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "example"
 	cluster.Consistency = gocql.Quorum
-	session, _ := cluster.CreateSession()
+	cluster.CQLVersion = "5.0.1"
+	session, error := cluster.CreateSession()
+	if error != nil {
+		fmt.Println(error)
+	}
+
 	defer session.Close()
 
 	// insert a tweet
