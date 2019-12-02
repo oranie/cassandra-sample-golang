@@ -23,6 +23,25 @@ func main() {
 
 	defer session.Close()
 
+	// create table
+	println("Create chat table progress.......")
+	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
+		name text,
+		timestamp text,
+		chat_room text,
+		comment text,
+		PRIMARY KEY (name, timestamp)) 
+		WITH CLUSTERING ORDER BY (timestamp DESC);`).Exec(); err != nil {
+		log.Fatal(err)
+	}
+
+	println("Create chat table done!")
+
+	if err := session.Query(`INSERT INTO chat (name,timestamp,chat_room,comment) VALUES (?,?,?,?)`,
+		"oranie", "001", "game_room1", "test comment").Exec(); err != nil {
+		log.Fatal(err)
+	}
+
 	// insert a tweet
 	if err := session.Query(`INSERT INTO tweet (timeline, id, text) VALUES (?, ?, ?)`,
 		"me", gocql.TimeUUID(), "hello world").Exec(); err != nil {
