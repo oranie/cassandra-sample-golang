@@ -42,11 +42,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// insert a tweet
-	if err := session.Query(`INSERT INTO tweet (timeline, id, text) VALUES (?, ?, ?)`,
-		"me", gocql.TimeUUID(), "hello world").Exec(); err != nil {
-		log.Fatal(err)
-	}
+	var name string
+	var timestamp string
+	var chat_room string
+	var comment string
 
 	var id gocql.UUID
 	var text string
@@ -54,11 +53,10 @@ func main() {
 	/* Search for a specific set of records whose 'timeline' column matches
 	 * the value 'me'. The secondary index that we created earlier will be
 	 * used for optimizing the search */
-	if err := session.Query(`SELECT id, text FROM tweet WHERE timeline = ? LIMIT 1`,
-		"me").Consistency(gocql.One).Scan(&id, &text); err != nil {
+	if err := session.Query(`SELECT * FROM chat`).Consistency(gocql.One).Scan(&name, &timestamp, &chat_room, &comment); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Tweet:", id, text)
+	fmt.Println("Chat:", name, timestamp, chat_room, comment)
 
 	// list all tweets
 	iter := session.Query(`SELECT id, text FROM tweet WHERE timeline = ?`, "me").Iter()
