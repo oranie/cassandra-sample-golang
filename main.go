@@ -1,12 +1,22 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gocql/gocql"
 )
+
+type Chat struct {
+	Name      string
+	Time      int64
+	Chat_room string
+	Comment   string
+}
 
 func main() {
 	// connect to the cluster
@@ -38,24 +48,25 @@ func main() {
 
 	println("Create chat table done!")
 
-	now := time.Now()
-
-	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
-		"oranie", now.UnixNano(), "game_room1", "test comment"+now.String()).Exec(); err != nil {
-		log.Fatal(err)
-	}
-
 	var name string
 	var time int64
 	var chat_room string
 	var comment string
 
-	if err := session.Query(`SELECT * FROM chat`).Consistency(gocql.One).Scan(&name, &time, &chat_room, &comment); err != nil {
+	chatData := generateChatData()
+
+	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
+		chatData.Name, chatData.Time, chatData.Chat_room, chatData.Comment).Exec(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Chat:", name, time, chat_room, comment)
 
-	// list all tweets
+	if err := session.Query(`SELECT * FROM chat where name = ?`,
+		chatData.Name).Consistency(gocql.One).Scan(&name, &time, &chat_room, &comment); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Insert Chat:", name, time, chat_room, comment)
+
+	// list all chat
 	iter := session.Query(`SELECT name,time,chat_room,comment FROM chat`).Iter()
 	for iter.Scan(&name, &time, &chat_room, &comment) {
 		fmt.Println("All Chat:", name, time, chat_room, comment)
@@ -63,4 +74,24 @@ func main() {
 	if err := iter.Close(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func generateChatData() Chat {
+	now := time.Now()
+
+	chatData := Chat{}
+	randomString := random()
+	chatData.Name = "oranie-" + randomString
+	chatData.Time = now.UnixNano()
+	chatData.Chat_room = "game_room-" + randomString
+	chatData.Comment = "test comment : " + now.String()
+
+	return chatData
+}
+
+func random() string {
+	var n uint64
+	binary.Read(rand.Reader, binary.LittleEndian, &n)
+	rand_string := strconv.FormatUint(n, 36)
+	return rand_string[:4]
 }
