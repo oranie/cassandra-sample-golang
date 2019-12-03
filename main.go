@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/gocql/gocql"
 )
@@ -27,41 +28,37 @@ func main() {
 	println("Create chat table progress.......")
 	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
 		name text,
-		timestamp text,
+		time bigint,
 		chat_room text,
 		comment text,
-		PRIMARY KEY (name, timestamp)) 
-		WITH CLUSTERING ORDER BY (timestamp DESC);`).Exec(); err != nil {
+		PRIMARY KEY (name, time)) 
+		WITH CLUSTERING ORDER BY (time DESC);`).Exec(); err != nil {
 		log.Fatal(err)
 	}
 
 	println("Create chat table done!")
 
-	if err := session.Query(`INSERT INTO chat (name,timestamp,chat_room,comment) VALUES (?,?,?,?)`,
-		"oranie", "001", "game_room1", "test comment").Exec(); err != nil {
+	now := time.Now()
+
+	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
+		"oranie", now.UnixNano(), "game_room1", "test comment"+now.String()).Exec(); err != nil {
 		log.Fatal(err)
 	}
 
 	var name string
-	var timestamp string
+	var time int64
 	var chat_room string
 	var comment string
 
-	var id gocql.UUID
-	var text string
-
-	/* Search for a specific set of records whose 'timeline' column matches
-	 * the value 'me'. The secondary index that we created earlier will be
-	 * used for optimizing the search */
-	if err := session.Query(`SELECT * FROM chat`).Consistency(gocql.One).Scan(&name, &timestamp, &chat_room, &comment); err != nil {
+	if err := session.Query(`SELECT * FROM chat`).Consistency(gocql.One).Scan(&name, &time, &chat_room, &comment); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Chat:", name, timestamp, chat_room, comment)
+	fmt.Println("Chat:", name, time, chat_room, comment)
 
 	// list all tweets
-	iter := session.Query(`SELECT id, text FROM tweet WHERE timeline = ?`, "me").Iter()
-	for iter.Scan(&id, &text) {
-		fmt.Println("Tweet:", id, text)
+	iter := session.Query(`SELECT name,time,chat_room,comment FROM chat`).Iter()
+	for iter.Scan(&name, &time, &chat_room, &comment) {
+		fmt.Println("All Chat:", name, time, chat_room, comment)
 	}
 	if err := iter.Close(); err != nil {
 		log.Fatal(err)
