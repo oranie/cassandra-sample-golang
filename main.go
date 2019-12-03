@@ -28,8 +28,12 @@ func main() {
 	// example ssh ssh.host -L 9042:cassandra.host:9042
 
 	cassandraCluster := os.Getenv("CASSANDRA_CLUSTER")
+	port := os.Getenv("PORT")
 	if cassandraCluster == "" {
 		panic("CassandraCluster endpint is not defind ENV")
+	}
+	if port == "" {
+		panic("App port is not defind ENV")
 	}
 
 	cluster := gocql.NewCluster(cassandraCluster)
