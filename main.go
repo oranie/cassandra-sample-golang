@@ -16,10 +16,10 @@ import (
 )
 
 type Chat struct {
-	Name      string
-	Time      int64
-	Chat_room string
-	Comment   string
+	Name     string
+	Time     int64
+	Chatroom string
+	Comment  string
 }
 
 func main() {
@@ -113,7 +113,7 @@ func insertData(session *gocql.Session, chatData *Chat) {
 	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
 		chatData.Time,
-		chatData.Chat_room,
+		chatData.Chatroom,
 		chatData.Comment).Exec(); err != nil {
 		log.Fatal(err)
 	}
@@ -128,7 +128,7 @@ func selectTestData(session *gocql.Session, chatData *Chat) Chat {
 		chatData.Name).Consistency(gocql.One).Scan(
 		&selectChatData.Name,
 		&selectChatData.Time,
-		&selectChatData.Chat_room,
+		&selectChatData.Chatroom,
 		&selectChatData.Comment); err != nil {
 		log.Fatal(err)
 	}
@@ -147,7 +147,7 @@ func allSelectData(session *gocql.Session) []Chat {
 	for iter.Scan(
 		&ChatData.Name,
 		&ChatData.Time,
-		&ChatData.Chat_room,
+		&ChatData.Chatroom,
 		&ChatData.Comment) {
 		log.Println("All Chat:", ChatData)
 		selectAllChatData = append(selectAllChatData, ChatData)
@@ -168,7 +168,7 @@ func generateChatData() Chat {
 	randomString := random()
 	chatData.Name = "oranie-" + randomString
 	chatData.Time = now.UnixNano()
-	chatData.Chat_room = "game_room-" + randomString
+	chatData.Chatroom = "game_room-" + randomString
 	chatData.Comment = "test comment : " + now.String()
 
 	return chatData
