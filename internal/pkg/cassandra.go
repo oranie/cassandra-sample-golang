@@ -1,4 +1,4 @@
-package service
+package chat
 
 import (
 	"github.com/gocql/gocql"
@@ -35,7 +35,7 @@ func CreateChatTable(session *gocql.Session) {
 	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
 		name text,
 		time bigint,
-		chat_room text,
+		chatroom text,
 		comment text,
 		PRIMARY KEY (name, time)) 
 		WITH CLUSTERING ORDER BY (time DESC);`).Exec(); err != nil {

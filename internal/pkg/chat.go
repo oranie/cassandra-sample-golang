@@ -1,4 +1,4 @@
-package service
+package chat
 
 import (
 	"crypto/rand"
@@ -10,16 +10,16 @@ import (
 )
 
 type Chat struct {
-	Name     string
-	Time     int64
-	Chatroom string
-	Comment  string
+	Name     string `form:"name" json:"name"`
+	Time     int64  `form:"time" json:"time"`
+	Chatroom string `form:"chatroom" json:"chatroom"`
+	Comment  string `form:"comment" json:"comment"`
 }
 
 // Insert test data
-func InsertData(session *gocql.Session, chatData *Chat) {
-	log.Println("Insert test data....")
-	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
+func InsertData(session *gocql.Session, chatData *Chat) string {
+	log.Printf("Insert test data....", chatData)
+	if err := session.Query(`INSERT INTO chat (name,time,chatroom,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
 		chatData.Time,
 		chatData.Chatroom,
@@ -27,13 +27,14 @@ func InsertData(session *gocql.Session, chatData *Chat) {
 		log.Fatal(err)
 	}
 	log.Println("Insert test data done!")
+	return "insert done"
 }
 
 //Get Insert data
 func SelectTestData(session *gocql.Session, chatData *Chat) Chat {
 	log.Println("Select insert test data....")
 	var selectChatData Chat
-	if err := session.Query(`SELECT name,time,chat_room,comment FROM chat where name = ?`,
+	if err := session.Query(`SELECT name,time,chatroom,comment FROM chat where name = ?`,
 		chatData.Name).Consistency(gocql.One).Scan(
 		&selectChatData.Name,
 		&selectChatData.Time,
@@ -52,7 +53,7 @@ func AllSelectData(session *gocql.Session) []Chat {
 	log.Println("Select all table data...")
 	var ChatData Chat
 	selectAllChatData := []Chat{}
-	iter := session.Query(`SELECT name,time,chat_room,comment FROM chat`).Iter()
+	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat`).Iter()
 	for iter.Scan(
 		&ChatData.Name,
 		&ChatData.Time,
@@ -77,7 +78,8 @@ func GenerateChatData() Chat {
 	randomString := random()
 	chatData.Name = "oranie-" + randomString
 	chatData.Time = now.UnixNano()
-	chatData.Chatroom = "game_room-" + randomString
+	//chatData.Chatroom = "game_room-" + randomString
+	chatData.Chatroom = "game_room-" + "oranie"
 	chatData.Comment = "test comment : " + now.String()
 
 	return chatData
