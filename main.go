@@ -35,7 +35,24 @@ func main() {
 
 	defer session.Close()
 
-	// create table
+	createChatTable(session)
+
+	//generate test data
+	chatData := generateChatData()
+
+	//insert test data
+	insertData(session, &chatData)
+
+	//select insert data
+	selectTestData(session, &chatData)
+
+	//select all data at chat table
+	allSelectTestData(session)
+
+}
+
+// create chat table
+func createChatTable(session *gocql.Session) {
 	log.Println("Create chat table progress.......")
 	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
 		name text,
@@ -47,18 +64,10 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Create chat table done!")
-
-	//Insert test data
-	chatData := generateChatData()
-
-	insertTestData(session, &chatData)
-	selectTestData(session, &chatData)
-	allSelectTestData(session)
-
 }
 
 // Insert test data
-func insertTestData(session *gocql.Session, chatData *Chat) {
+func insertData(session *gocql.Session, chatData *Chat) {
 	log.Println("Insert test data....")
 	if err := session.Query(`INSERT INTO chat (name,time,chat_room,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
@@ -97,11 +106,12 @@ func allSelectTestData(session *gocql.Session) {
 		&selectAllChatData.Time,
 		&selectAllChatData.Chat_room,
 		&selectAllChatData.Comment) {
-		fmt.Println("All Chat:", selectAllChatData)
+		log.Println("All Chat:", selectAllChatData)
 	}
 	if err := iter.Close(); err != nil {
 		log.Fatal(err)
 	}
+	time.Sleep(1000)
 	log.Println("Select all table data Done!")
 }
 
