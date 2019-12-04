@@ -23,9 +23,15 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	cluster := gocql.NewCluster(cassandraCluster)
 	cluster.Keyspace = "example"
 	cluster.Consistency = gocql.Quorum
-	//cluster.CQLVersion = "5.0.1"
+	cluster.CQLVersion = "5.0.1"
+	cluster.ProtoVersion = 4
+	cluster.Port = 9142
 
 	session, error := cluster.CreateSession()
+	if error != nil {
+		panic(error)
+	}
+
 	return session, error
 }
 

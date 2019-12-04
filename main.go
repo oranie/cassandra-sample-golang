@@ -77,6 +77,23 @@ func main() {
 
 		c.String(http.StatusOK, resp)
 	})
+	r.GET("/chat/comments/latest", func(c *gin.Context) {
+		chatData := chat.SelectTestData(session, &chatData)
+		json, err := json.Marshal(chatData)
+		if err != nil {
+			panic(err)
+		}
+		c.String(http.StatusOK, string(json))
+	})
+
+	r.GET("/chat/comments/all", func(c *gin.Context) {
+		chatData := chat.SelectTestData(session, &chatData)
+		json, err := json.Marshal(chatData)
+		if err != nil {
+			panic(err)
+		}
+		c.String(http.StatusOK, string(json))
+	})
 
 	r.GET("/insertstatus", func(c *gin.Context) {
 		chatData := chat.SelectTestData(session, &chatData)
