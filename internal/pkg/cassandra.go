@@ -6,39 +6,16 @@ import (
 	"os"
 )
 
+// connect to the cluster
+// My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
+// example ssh ssh.host -L 9042:cassandra.host:9042
 func CreateCassandraSession() (*gocql.Session, error) {
-	// connect to the cluster
-	// My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
-	// example ssh ssh.host -L 9042:cassandra.host:9042
 
-	cassandraCluster := os.Getenv("CASSANDRA_CLUSTER")
-	port := os.Getenv("PORT")
+	cassandraCluster := os.Getenv("CASSANDRA_ENDPOINT")
 	if cassandraCluster == "" {
-		panic("CassandraCluster endpint is not defind ENV")
+		panic("Cassandra endpoint is not defind ENV")
 	}
-	if port == "" {
-		panic("App port is not defind ENV")
-	}
-
-	cluster := gocql.NewCluster(cassandraCluster)
-	cluster.Keyspace = "example"
-	cluster.Consistency = gocql.Quorum
-	cluster.CQLVersion = "5.0.1"
-	cluster.ProtoVersion = 4
-	cluster.Port = 9142
-	cluster.DisableInitialHostLookup = true
-	cluster.IgnorePeerAddr = true
-	/*
-		cluster.Authenticator = gocql.PasswordAuthenticator{
-			Username: "cassandra",
-			Password: "cassandra",
-		}
-	*/
-
-	cluster.SslOpts = &gocql.SslOptions{
-		CaPath:                 "./AmazonRootCA1.pem",
-		EnableHostVerification: false,
-	}
+	cluster := CreateSessionConf(cassandraCluster)
 
 	session, error := cluster.CreateSession()
 	if error != nil {
@@ -47,6 +24,35 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	}
 
 	return session, error
+}
+
+func CreateSessionConf(cassandraCluster string) *gocql.ClusterConfig {
+
+	if cassandraCluster == "" {
+		panic("CassandraCluster endpint is not defind ENV")
+	}
+
+	cassandraUserName := os.Getenv("CASSANDRA_USER")
+	cassandraUserPass := os.Getenv("CASSANDRA_PASS")
+	cassandraKeyspace := os.Getenv("CASSANDRA_KS")
+
+	cluster := gocql.NewCluster(cassandraCluster)
+	cluster.Keyspace = cassandraKeyspace
+	cluster.Consistency = gocql.Quorum
+	cluster.Port = 9142
+	cluster.DisableInitialHostLookup = true
+
+	cluster.Authenticator = gocql.PasswordAuthenticator{
+		Username: cassandraUserName,
+		Password: cassandraUserPass,
+	}
+
+	cluster.SslOpts = &gocql.SslOptions{
+		CaPath:                 "./AmazonRootCA1.pem",
+		EnableHostVerification: false,
+	}
+
+	return cluster
 }
 
 // create chat table

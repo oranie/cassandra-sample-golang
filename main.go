@@ -22,6 +22,10 @@ func main() {
 	if env == "prd" || env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	appPort := os.Getenv("APP_PORT")
+	if appPort == "" {
+		panic("App port is not defind ENV")
+	}
 
 	session, error := chat.CreateCassandraSession()
 	if error != nil {
@@ -113,5 +117,5 @@ func main() {
 		c.String(http.StatusOK, string(json))
 	})
 
-	r.Run()
+	r.Run(":" + appPort)
 }
