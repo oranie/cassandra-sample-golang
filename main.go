@@ -18,13 +18,10 @@ type Chat struct {
 }
 
 func main() {
-	env := os.Getenv("ENV")
-	if env == "prd" || env == "production" {
+	env := chat.GetEnvValue()
+
+	if env.AppEnv == "prd" || env.AppEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
-	}
-	appPort := os.Getenv("APP_PORT")
-	if appPort == "" {
-		panic("App port is not defind ENV")
 	}
 
 	session, error := chat.CreateCassandraSession()

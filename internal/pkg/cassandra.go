@@ -4,10 +4,12 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/kelseyhightower/envconfig"
 	"log"
-	"os"
 )
 
 type Env struct {
+	AppEnv            string `envconfig:"APP_ENV" default:"test"`
+	AppPort           int    `envconfig:"APP_PORT" default:"8081"`
+	CassdraEndpoint   string `envconfig:"CASSANDRA_ENDPOINT" default:"127.0.0.1"`
 	CassandraPort     int    `envconfig:"CASSANDRA_PORT" default:"9042"`
 	CassandraUserName string `envconfig:"CASSANDRA_USER" default:"cassandra"`
 	CassandraUserPass string `envconfig:"CASSANDRA_PASS" default:"cassandra"`
@@ -18,12 +20,8 @@ type Env struct {
 // My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
 // example ssh ssh.host -L 9042:cassandra.host:9042
 func CreateCassandraSession() (*gocql.Session, error) {
-
-	cassandraCluster := os.Getenv("CASSANDRA_ENDPOINT")
-	if cassandraCluster == "" {
-		panic("Cassandra endpoint is not defind ENV")
-	}
-	cluster := CreateSessionConf(cassandraCluster)
+	env := GetEnvValue()
+	cluster, _ := CreateSessionConf(env)
 
 	session, error := cluster.CreateSession()
 	if error != nil {
@@ -34,15 +32,17 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	return session, error
 }
 
-func CreateSessionConf(cassandraCluster string) *gocql.ClusterConfig {
+func GetEnvValue() Env {
 	var env Env
 	err := envconfig.Process("", &env)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Println("env set value : ", env)
+	return env
+}
 
-	cluster := gocql.NewCluster(cassandraCluster)
+func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
+	cluster := gocql.NewCluster(env.CassdraEndpoint)
 	cluster.Keyspace = env.CassandraKeyspace
 	cluster.Consistency = gocql.Quorum
 	cluster.Port = env.CassandraPort
@@ -58,7 +58,7 @@ func CreateSessionConf(cassandraCluster string) *gocql.ClusterConfig {
 		EnableHostVerification: false,
 	}
 
-	return cluster
+	return cluster, env
 }
 
 // create chat table
