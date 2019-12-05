@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gocql/gocql"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -18,22 +18,7 @@ type Chat struct {
 }
 
 func main() {
-	env := chat.GetEnvValue()
-
-	if env.AppEnv == "prd" || env.AppEnv == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	session, error := chat.CreateCassandraSession()
-	if error != nil {
-		fmt.Println(error)
-	}
-
-	defer session.Close()
-	chat.CreateChatTable(session)
-
-	//generate test data
-	chatData := chat.GenerateChatData()
+	env, session, chatData := initApp()
 
 	r := gin.Default()
 
@@ -114,5 +99,26 @@ func main() {
 		c.String(http.StatusOK, string(json))
 	})
 
-	r.Run(":" + appPort)
+	r.Run(":" + string(env.AppPort))
+}
+
+func initApp() (chat.Env, *gocql.Session, chat.Chat) {
+	env := chat.GetEnvValue()
+
+	if env.AppEnv == "prd" || env.AppEnv == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	session, error := chat.CreateCassandraSession()
+	if error != nil {
+		fmt.Println(error)
+	}
+	defer session.Close()
+
+	//check and create chat table
+	chat.CreateChatTable(session)
+
+	//generate test data
+	chatData := chat.GenerateChatData()
+	return env, session, chatData
 }
