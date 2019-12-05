@@ -51,6 +51,8 @@ func main() {
 		c.String(http.StatusOK, "Test done.", result)
 	})
 
+	r.StaticFile("/chat", "./web/livechat.html")
+
 	r.POST("/chat/comments/add", func(c *gin.Context) {
 		var json chat.Chat
 		if err := c.ShouldBindJSON(&json); err != nil {
