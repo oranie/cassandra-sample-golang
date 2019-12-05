@@ -27,11 +27,6 @@ func CreateCassandraSession() (*gocql.Session, error) {
 }
 
 func CreateSessionConf(cassandraCluster string) *gocql.ClusterConfig {
-
-	if cassandraCluster == "" {
-		panic("CassandraCluster endpint is not defind ENV")
-	}
-
 	cassandraUserName := os.Getenv("CASSANDRA_USER")
 	cassandraUserPass := os.Getenv("CASSANDRA_PASS")
 	cassandraKeyspace := os.Getenv("CASSANDRA_KS")
