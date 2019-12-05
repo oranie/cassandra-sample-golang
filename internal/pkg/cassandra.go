@@ -2,9 +2,17 @@ package chat
 
 import (
 	"github.com/gocql/gocql"
+	"github.com/kelseyhightower/envconfig"
 	"log"
 	"os"
 )
+
+type Env struct {
+	CassandraPort     int    `envconfig:"CASSANDRA_PORT" default:"9042"`
+	CassandraUserName string `envconfig:"CASSANDRA_USER" default:"cassandra"`
+	CassandraUserPass string `envconfig:"CASSANDRA_PASS" default:"cassandra"`
+	CassandraKeyspace string `envconfig:"CASSANDRA_KS" default:"example"`
+}
 
 // connect to the cluster
 // My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
@@ -27,19 +35,22 @@ func CreateCassandraSession() (*gocql.Session, error) {
 }
 
 func CreateSessionConf(cassandraCluster string) *gocql.ClusterConfig {
-	cassandraUserName := os.Getenv("CASSANDRA_USER")
-	cassandraUserPass := os.Getenv("CASSANDRA_PASS")
-	cassandraKeyspace := os.Getenv("CASSANDRA_KS")
+	var env Env
+	err := envconfig.Process("", &env)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Println("env set value : ", env)
 
 	cluster := gocql.NewCluster(cassandraCluster)
-	cluster.Keyspace = cassandraKeyspace
+	cluster.Keyspace = env.CassandraKeyspace
 	cluster.Consistency = gocql.Quorum
-	cluster.Port = 9142
+	cluster.Port = env.CassandraPort
 	cluster.DisableInitialHostLookup = true
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
-		Username: cassandraUserName,
-		Password: cassandraUserPass,
+		Username: env.CassandraUserName,
+		Password: env.CassandraUserPass,
 	}
 
 	cluster.SslOpts = &gocql.SslOptions{
