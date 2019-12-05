@@ -26,10 +26,24 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	cluster.CQLVersion = "5.0.1"
 	cluster.ProtoVersion = 4
 	cluster.Port = 9142
+	cluster.DisableInitialHostLookup = true
+	cluster.IgnorePeerAddr = true
+	/*
+		cluster.Authenticator = gocql.PasswordAuthenticator{
+			Username: "cassandra",
+			Password: "cassandra",
+		}
+	*/
+
+	cluster.SslOpts = &gocql.SslOptions{
+		CaPath:                 "./AmazonRootCA1.pem",
+		EnableHostVerification: false,
+	}
 
 	session, error := cluster.CreateSession()
 	if error != nil {
-		panic(error)
+		log.Printf("Error: connect cassandra cluster : %v", cluster)
+		panic(error.Error())
 	}
 
 	return session, error
