@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gocql/gocql"
+	"log"
 	"net/http"
 	"time"
 )
@@ -19,6 +20,9 @@ type Chat struct {
 
 func main() {
 	env, session, chatData := initApp()
+	defer session.Close()
+
+	log.Printf("session : %v", session)
 
 	r := gin.Default()
 
@@ -35,13 +39,16 @@ func main() {
 	})
 
 	r.GET("/run-test", func(c *gin.Context) {
+		if &chatData != nil {
+			chatData = chat.GenerateChatData()
+		}
 		//insert test data
 		chat.InsertData(session, &chatData)
 		//select insert data
 		chat.SelectTestData(session, &chatData)
 		//select all data at chat table
-		chat.AllSelectData(session)
-		c.String(http.StatusOK, "Test done.")
+		result := chat.AllSelectData(session)
+		c.String(http.StatusOK, "Test done.", result)
 	})
 
 	r.POST("/chat/comments/add", func(c *gin.Context) {
@@ -63,8 +70,10 @@ func main() {
 
 		c.String(http.StatusOK, resp)
 	})
+
 	r.GET("/chat/comments/latest", func(c *gin.Context) {
-		chatData := chat.SelectTestData(session, &chatData)
+		chatroom := "game_room-oranie"
+		chatData := chat.ChatroomLatestData(session, chatroom)
 		json, err := json.Marshal(chatData)
 		if err != nil {
 			panic(err)
@@ -73,7 +82,8 @@ func main() {
 	})
 
 	r.GET("/chat/comments/all", func(c *gin.Context) {
-		chatData := chat.SelectTestData(session, &chatData)
+		chatroom := "game_room-oranie"
+		chatData := chat.ChatroomAllData(session, chatroom)
 		json, err := json.Marshal(chatData)
 		if err != nil {
 			panic(err)
@@ -98,8 +108,8 @@ func main() {
 		}
 		c.String(http.StatusOK, string(json))
 	})
-
-	r.Run(":" + string(env.AppPort))
+	portString := ":" + env.AppPort
+	r.Run(portString)
 }
 
 func initApp() (chat.Env, *gocql.Session, chat.Chat) {
@@ -113,7 +123,6 @@ func initApp() (chat.Env, *gocql.Session, chat.Chat) {
 	if error != nil {
 		fmt.Println(error)
 	}
-	defer session.Close()
 
 	//check and create chat table
 	chat.CreateChatTable(session)

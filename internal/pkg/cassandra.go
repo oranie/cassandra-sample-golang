@@ -8,7 +8,7 @@ import (
 
 type Env struct {
 	AppEnv            string `envconfig:"APP_ENV" default:"test"`
-	AppPort           int    `envconfig:"APP_PORT" default:"8081"`
+	AppPort           string `envconfig:"APP_PORT" default:"8081"`
 	CassdraEndpoint   string `envconfig:"CASSANDRA_ENDPOINT" default:"127.0.0.1"`
 	CassandraPort     int    `envconfig:"CASSANDRA_PORT" default:"9042"`
 	CassandraUserName string `envconfig:"CASSANDRA_USER" default:"cassandra"`
@@ -46,18 +46,18 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 	cluster.Keyspace = env.CassandraKeyspace
 	cluster.Consistency = gocql.Quorum
 	cluster.Port = env.CassandraPort
-	cluster.DisableInitialHostLookup = true
+	//cluster.DisableInitialHostLookup = true
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
 		Username: env.CassandraUserName,
 		Password: env.CassandraUserPass,
 	}
-
-	cluster.SslOpts = &gocql.SslOptions{
-		CaPath:                 "./AmazonRootCA1.pem",
-		EnableHostVerification: false,
-	}
-
+	/*
+		cluster.SslOpts = &gocql.SslOptions{
+			CaPath:                 "./AmazonRootCA1.pem",
+			EnableHostVerification: false,
+		}
+	*/
 	return cluster, env
 }
 
