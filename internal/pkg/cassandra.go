@@ -4,6 +4,7 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/kelseyhightower/envconfig"
 	"log"
+	"regexp"
 )
 
 type Env struct {
@@ -47,18 +48,23 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 	cluster.Keyspace = env.CassandraKeyspace
 	cluster.Consistency = gocql.Quorum
 	cluster.Port = env.CassandraPort
-	//cluster.DisableInitialHostLookup = true
+	cluster.DisableInitialHostLookup = true
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
 		Username: env.CassandraUserName,
 		Password: env.CassandraUserPass,
 	}
-	/*
+
+	// local env check
+	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
+	if localCheck.MatchString(env.CassdraEndpoint) == false {
+		cluster.DisableInitialHostLookup = true
 		cluster.SslOpts = &gocql.SslOptions{
 			CaPath:                 "./AmazonRootCA1.pem",
 			EnableHostVerification: false,
 		}
-	*/
+	}
+
 	return cluster, env
 }
 

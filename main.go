@@ -145,6 +145,7 @@ func main() {
 		}
 		c.String(http.StatusOK, string(json))
 	})
+
 	portString := ":" + env.AppPort
 	r.Run(portString)
 }
