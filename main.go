@@ -4,10 +4,14 @@ import (
 	"./internal/pkg"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gocql/gocql"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 	"time"
 )
 
@@ -18,6 +22,10 @@ type Chat struct {
 	Comment  string
 }
 
+type Comnets struct {
+	Response []chat.Chat `form:"name" json:"response"`
+}
+
 func main() {
 	env, session, chatData := initApp()
 	defer session.Close()
@@ -25,10 +33,19 @@ func main() {
 	log.Printf("session : %v", session)
 
 	r := gin.Default()
+	ApiEndpoint := "http://localhost:" + env.AppPort + "/"
+	// local env check
+	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
+	if localCheck.MatchString(env.AppEndpoint) == false {
+		ApiEndpoint = "https://" + env.AppEndpoint + env.AppPort + "/"
+	}
+	log.Println("App Endpoint : ", ApiEndpoint)
+
+	r.Use(cors.Default())
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "server status id good",
+			"status": "server status id good",
 		})
 	})
 
@@ -51,7 +68,31 @@ func main() {
 		c.String(http.StatusOK, "Test done.", result)
 	})
 
-	r.StaticFile("/chat", "./web/livechat.html")
+	r.GET("/chat", func(c *gin.Context) {
+
+		f, err := os.Open("./web/livechat.html")
+		if err != nil {
+			fmt.Println("file read error", err)
+		}
+		defer f.Close()
+		b, err := ioutil.ReadAll(f)
+
+		//html static http://localhost:8080/
+		// if public endpoint
+		ApiEndpoint := "http://localhost:" + env.AppPort + "/"
+		rep := regexp.MustCompile(`http://localhost:8080/`)
+		// local env check
+		localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
+		if localCheck.MatchString(env.AppEndpoint) == false {
+			ApiEndpoint = "https://" + env.AppEndpoint + env.AppPort + "/"
+		}
+
+		str := rep.ReplaceAllString(string(b), ApiEndpoint)
+		c.Header("Content-Type", "text/html")
+		c.Header("Access-Control-Allow-Origin", "*")
+
+		c.String(http.StatusOK, str)
+	})
 
 	r.POST("/chat/comments/add", func(c *gin.Context) {
 		var json chat.Chat
@@ -63,43 +104,37 @@ func main() {
 		postData := chat.Chat{
 			Name:     json.Name,
 			Time:     time.Now().UnixNano(),
-			Chatroom: "oranie-room",
+			Chatroom: "game_room-oranie",
 			Comment:  json.Comment,
 		}
 
 		fmt.Printf("%s", json)
 		resp := chat.InsertData(session, &postData)
 
-		c.String(http.StatusOK, resp)
+		c.JSON(http.StatusOK, resp)
 	})
 
 	r.GET("/chat/comments/latest", func(c *gin.Context) {
 		chatroom := "game_room-oranie"
 		chatData := chat.ChatroomLatestData(session, chatroom)
-		json, err := json.Marshal(chatData)
-		if err != nil {
-			panic(err)
-		}
-		c.String(http.StatusOK, string(json))
+		comnents := Comnets{Response: chatData}
+
+		log.Println("latest data :", comnents)
+		c.JSON(http.StatusOK, comnents)
 	})
 
 	r.GET("/chat/comments/all", func(c *gin.Context) {
 		chatroom := "game_room-oranie"
 		chatData := chat.ChatroomAllData(session, chatroom)
-		json, err := json.Marshal(chatData)
-		if err != nil {
-			panic(err)
-		}
-		c.String(http.StatusOK, string(json))
+		comnents := Comnets{Response: chatData}
+
+		log.Println("all data :", comnents)
+		c.JSON(http.StatusOK, comnents)
 	})
 
 	r.GET("/insertstatus", func(c *gin.Context) {
 		chatData := chat.SelectTestData(session, &chatData)
-		json, err := json.Marshal(chatData)
-		if err != nil {
-			panic(err)
-		}
-		c.String(http.StatusOK, string(json))
+		c.JSON(http.StatusOK, chatData)
 	})
 
 	r.GET("/alldata", func(c *gin.Context) {

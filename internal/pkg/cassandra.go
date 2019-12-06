@@ -9,6 +9,7 @@ import (
 type Env struct {
 	AppEnv            string `envconfig:"APP_ENV" default:"test"`
 	AppPort           string `envconfig:"APP_PORT" default:"8081"`
+	AppEndpoint       string `envconfig:"APP_ENDPOINT" default:"http://127.0.0.1"`
 	CassdraEndpoint   string `envconfig:"CASSANDRA_ENDPOINT" default:"127.0.0.1"`
 	CassandraPort     int    `envconfig:"CASSANDRA_PORT" default:"9042"`
 	CassandraUserName string `envconfig:"CASSANDRA_USER" default:"cassandra"`

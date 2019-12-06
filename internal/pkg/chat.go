@@ -17,17 +17,17 @@ type Chat struct {
 }
 
 // Insert test data
-func InsertData(session *gocql.Session, chatData *Chat) string {
-	log.Printf("Insert test data....", chatData)
+func InsertData(session *gocql.Session, chatData *Chat) *Chat {
+	log.Printf("Insert test data....", chatData, chatData)
 	if err := session.Query(`INSERT INTO chat (name,time,chatroom,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
 		chatData.Time,
 		chatData.Chatroom,
 		chatData.Comment).Exec(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Insert test data done!")
-	return "insert done"
+	return chatData
 }
 
 //Get Insert data
@@ -40,7 +40,7 @@ func SelectTestData(session *gocql.Session, chatData *Chat) Chat {
 		&selectChatData.Time,
 		&selectChatData.Chatroom,
 		&selectChatData.Comment); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Insert Data:", selectChatData)
 	log.Println("Select insert test data done!")
@@ -49,7 +49,7 @@ func SelectTestData(session *gocql.Session, chatData *Chat) Chat {
 
 func ChatroomLatestData(session *gocql.Session, chatroom string) []Chat {
 	// list all chat
-	log.Println("Select all table data...")
+	//log.Println("Select Latest table data...")
 	var ChatData Chat
 	selectAllChatData := []Chat{}
 	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ? LIMIT 25 ALLOW FILTERING  `, chatroom).Iter()
@@ -58,13 +58,12 @@ func ChatroomLatestData(session *gocql.Session, chatroom string) []Chat {
 		&ChatData.Time,
 		&ChatData.Chatroom,
 		&ChatData.Comment) {
-		log.Println("All Chat:", ChatData)
 		selectAllChatData = append(selectAllChatData, ChatData)
 	}
-	log.Println("selectAllChatData : ", selectAllChatData)
+	//log.Println("selectAllChatData : ", selectAllChatData)
 
 	if err := iter.Close(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	log.Println("Select all table data Done!")
@@ -73,7 +72,7 @@ func ChatroomLatestData(session *gocql.Session, chatroom string) []Chat {
 
 func ChatroomAllData(session *gocql.Session, chatroom string) []Chat {
 	// list all chat
-	log.Println("Select all table data...")
+	//log.Println("Select all table CQL...")
 	var ChatData Chat
 	selectAllChatData := []Chat{}
 	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ? ALLOW FILTERING `, chatroom).Iter()
@@ -82,13 +81,12 @@ func ChatroomAllData(session *gocql.Session, chatroom string) []Chat {
 		&ChatData.Time,
 		&ChatData.Chatroom,
 		&ChatData.Comment) {
-		log.Println("All Chat:", ChatData)
 		selectAllChatData = append(selectAllChatData, ChatData)
 	}
-	log.Println("selectAllChatData : ", selectAllChatData)
+	//log.Println("selectAllChatData : ", selectAllChatData)
 
 	if err := iter.Close(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	log.Println("Select all table data Done!")
@@ -107,13 +105,11 @@ func AllSelectData(session *gocql.Session) []Chat {
 		&ChatData.Time,
 		&ChatData.Chatroom,
 		&ChatData.Comment) {
-		log.Println("All Chat:", ChatData)
 		selectAllChatData = append(selectAllChatData, ChatData)
 	}
-	log.Println("selectAllChatData : ", selectAllChatData)
 
 	if err := iter.Close(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	log.Println("Select all table data Done!")

@@ -96,7 +96,7 @@
         </tr>
         </thead>
         <tr v-for="comment in all_comments.response">
-            <td>{{ comment.stream_seq_id }}</td>
+            <td>{{ comment.time }}</td>
             <td>{{ comment.name }}</td>
             <td>{{ comment.comment }}</td>
         </tr>
@@ -185,11 +185,13 @@
                 ;
             }
         },
+        /*
         mounted: function () {
             setInterval(this.get_latest, 3000)
         },
         destroyed: function () {
         }
+        */
     });
 </script>
 
