@@ -1,10 +1,13 @@
-#FROM golang:1.12.8
-#GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build main.go
+#GOOS=linux GOARCH=amd64 CGO_ENABLED=0
+#go build main.go
+
+#FROM amazonlinux
 FROM alpine:3.10
 MAINTAINER oranie
 
-RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-
+#RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 ADD . /go/src/myapp
 WORKDIR /go/src/myapp
-CMD ["/go/src/myapp/main"]
+RUN chmod 755 ./main ./run.sh
+ENTRYPOINT ["/go/src/myapp/main"]
+CMD ["/go/src/myapp/run.sh && echo 'success'"]

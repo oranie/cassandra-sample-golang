@@ -1,0 +1,11 @@
+diff --git a/conn.go b/conn.go
+index 209eddf..7405222 100644
+--- a/conn.go
++++ b/conn.go
+@@ -30,6 +30,7 @@ var (
+                "com.datastax.bdp.cassandra.auth.DseAuthenticator",
+                "io.aiven.cassandra.auth.AivenAuthenticator",
+                "com.ericsson.bss.cassandra.ecaudit.auth.AuditPasswordAuthenticator",
++               "com.amazon.helenus.auth.HelenusAuthenticator",
+        }
+ )

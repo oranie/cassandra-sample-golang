@@ -37,7 +37,7 @@ func main() {
 	// local env check
 	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
 	if localCheck.MatchString(env.AppEndpoint) == false {
-		ApiEndpoint = "https://" + env.AppEndpoint + env.AppPort + "/"
+		ApiEndpoint = "https://" + env.AppEndpoint + "/"
 	}
 	log.Println("App Endpoint : ", ApiEndpoint)
 
@@ -78,7 +78,7 @@ func main() {
 		// local env check
 		localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
 		if localCheck.MatchString(env.AppEndpoint) == false {
-			ApiEndpoint = "https://" + env.AppEndpoint + env.AppPort + "/"
+			ApiEndpoint = "https://" + env.AppEndpoint + "/"
 		}
 
 		str := rep.ReplaceAllString(string(b), ApiEndpoint)
