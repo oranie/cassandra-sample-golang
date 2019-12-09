@@ -8,6 +8,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - yum install -y docker golang
       - echo Building the Docker image...
       - GOOS=linux GOARCH=amd64  go build ./main.go
       - docker build -t $IMAGE_REPO_NAME .
