@@ -1,26 +1,20 @@
 package main
 
 import (
-	"./internal/pkg"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/gocql/gocql"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
 	"time"
-)
 
-type Chat struct {
-	Name     string
-	Time     int64
-	Chatroom string
-	Comment  string
-}
+	"./internal/pkg"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/gocql/gocql"
+)
 
 type Comnets struct {
 	Response []chat.Chat `form:"name" json:"response"`
@@ -36,7 +30,7 @@ func main() {
 	ApiEndpoint := "http://localhost:" + env.AppPort + "/"
 	// local env check
 	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
-	if localCheck.MatchString(env.AppEndpoint) == false {
+	if !localCheck.MatchString(env.AppEndpoint) {
 		ApiEndpoint = "https://" + env.AppEndpoint + "/"
 	}
 	log.Println("App Endpoint : ", ApiEndpoint)
@@ -70,6 +64,9 @@ func main() {
 		}
 		defer f.Close()
 		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			log.Fatal("html file read error: ", err)
+		}
 
 		//html static http://localhost:8080/
 		// if public endpoint
@@ -77,7 +74,7 @@ func main() {
 		rep := regexp.MustCompile(`http://localhost:8080/`)
 		// local env check
 		localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
-		if localCheck.MatchString(env.AppEndpoint) == false {
+		if !localCheck.MatchString(env.AppEndpoint) {
 			ApiEndpoint = "https://" + env.AppEndpoint + "/"
 		}
 
@@ -102,7 +99,7 @@ func main() {
 			Comment:  json.Comment,
 		}
 
-		fmt.Printf("%s", json)
+		fmt.Printf("%v", json)
 		resp := chat.InsertData(session, &postData)
 
 		c.JSON(http.StatusOK, resp)
@@ -141,7 +138,11 @@ func main() {
 	})
 
 	portString := ":" + env.AppPort
-	r.Run(portString)
+	err := r.Run(portString)
+	if err != nil {
+		log.Fatal("gin-gomic run error:", err)
+	}
+
 }
 
 func initApp() (chat.Env, *gocql.Session, chat.Chat) {

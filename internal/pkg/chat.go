@@ -3,10 +3,11 @@ package chat
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"github.com/gocql/gocql"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/gocql/gocql"
 )
 
 type Chat struct {
@@ -18,7 +19,7 @@ type Chat struct {
 
 // Insert test data
 func InsertData(session *gocql.Session, chatData *Chat) *Chat {
-	log.Printf("Insert test data....", chatData, chatData)
+	log.Printf("Insert test data....%v %v", chatData, chatData)
 	if err := session.Query(`INSERT INTO chat (name,time,chatroom,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
 		chatData.Time,
@@ -134,7 +135,10 @@ func GenerateChatData() Chat {
 //generate random string: 4char
 func random() string {
 	var n uint64
-	binary.Read(rand.Reader, binary.LittleEndian, &n)
+	err := binary.Read(rand.Reader, binary.LittleEndian, &n)
+	if err != nil {
+		log.Println("generate random data error", err)
+	}
 	rand_string := strconv.FormatUint(n, 36)
 	return rand_string[:4]
 }

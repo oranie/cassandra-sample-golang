@@ -1,10 +1,11 @@
 package chat
 
 import (
-	"github.com/gocql/gocql"
-	"github.com/kelseyhightower/envconfig"
 	"log"
 	"regexp"
+
+	"github.com/gocql/gocql"
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Env struct {
@@ -57,7 +58,7 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 
 	// local env check
 	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
-	if localCheck.MatchString(env.CassdraEndpoint) == false {
+	if !localCheck.MatchString(env.CassdraEndpoint) {
 		cluster.DisableInitialHostLookup = true
 		cluster.SslOpts = &gocql.SslOptions{
 			CaPath:                 "./AmazonRootCA1.pem",
