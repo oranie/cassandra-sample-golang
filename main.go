@@ -14,7 +14,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gocql/gocql"
 )
 
 type Comments struct {
@@ -22,7 +21,7 @@ type Comments struct {
 }
 
 func main() {
-	env, session, chatData := initApp()
+	env, session, chatData := chat.InitApp()
 	defer session.Close()
 
 	log.Printf("session : %v", session)
@@ -144,24 +143,4 @@ func main() {
 		log.Fatal("gin-gomic run error:", err)
 	}
 
-}
-
-func initApp() (chat.Env, *gocql.Session, chat.Comment) {
-	env := chat.GetEnvValue()
-
-	if env.AppEnv == "prd" || env.AppEnv == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	session, error := chat.CreateCassandraSession()
-	if error != nil {
-		fmt.Println(error)
-	}
-
-	//check and create chat table
-	chat.CreateChatTable(session)
-
-	//generate test data
-	chatData := chat.GenerateChatData()
-	return env, session, chatData
 }

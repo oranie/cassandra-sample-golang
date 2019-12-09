@@ -1,8 +1,11 @@
 package chat
 
 import (
+	"fmt"
 	"log"
 	"regexp"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/gocql/gocql"
 	"github.com/kelseyhightower/envconfig"
@@ -42,6 +45,26 @@ func GetEnvValue() Env {
 		log.Fatal(err.Error())
 	}
 	return env
+}
+
+func InitApp() (Env, *gocql.Session, Comment) {
+	env := GetEnvValue()
+
+	if env.AppEnv == "prd" || env.AppEnv == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	session, error := CreateCassandraSession()
+	if error != nil {
+		fmt.Println(error)
+	}
+
+	//check and create chat table
+	CreateChatTable(session)
+
+	//generate test data
+	chatData := GenerateChatData()
+	return env, session, chatData
 }
 
 func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {

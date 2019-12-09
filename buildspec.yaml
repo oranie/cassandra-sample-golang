@@ -16,7 +16,6 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker images
-      - go get -u github.com/gocql/gocql
       - GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build ./main.go
       - patch --ignore-whitespace -u /root/go/src/github.com/gocql/gocql/conn.go < diff.patch
       - head -n 50 /root/go/src/github.com/gocql/gocql/conn.go
