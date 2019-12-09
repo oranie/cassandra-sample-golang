@@ -4,6 +4,7 @@ phases:
   install:
     runtime-versions:
       docker: 18
+      golang: 1.13
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -11,7 +12,6 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - yum install -y golang
       - echo Building the Docker image...
       - GOOS=linux GOARCH=amd64  go build ./main.go
       - docker build -t $IMAGE_REPO_NAME .
