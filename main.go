@@ -10,21 +10,15 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/oranie/cassandra-sample-golang/pkg"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gocql/gocql"
-	"github.com/oranie/cassandra-sample-golang/pkg"
 )
 
-type Comment struct {
-	Name     string `form:"name" json:"name"`
-	Time     int64  `form:"time" json:"time"`
-	Chatroom string `form:"chatroom" json:"chatroom"`
-	Comment  string `form:"comment" json:"comment"`
-}
-
-type Comnets struct {
-	Response []chat.Chat `form:"name" json:"response"`
+type Comments struct {
+	Response []chat.Comment `form:"name" json:"response"`
 }
 
 func main() {
@@ -93,13 +87,13 @@ func main() {
 	})
 
 	r.POST("/chat/comments/add", func(c *gin.Context) {
-		var json Comnets
+		var json chat.Comment
 		if err := c.ShouldBindJSON(&json); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		postData := chat.Chat{
+		postData := chat.Comment{
 			Name:     json.Name,
 			Time:     time.Now().UnixNano(),
 			Chatroom: "game_room-oranie",
@@ -115,7 +109,7 @@ func main() {
 	r.GET("/chat/comments/latest", func(c *gin.Context) {
 		chatroom := "game_room-oranie"
 		chatData := chat.ChatroomLatestData(session, chatroom)
-		comnents := Comnets{Response: chatData}
+		comnents := Comments{Response: chatData}
 
 		log.Println("latest data :", comnents)
 		c.JSON(http.StatusOK, comnents)
@@ -124,7 +118,7 @@ func main() {
 	r.GET("/chat/comments/all", func(c *gin.Context) {
 		chatroom := "game_room-oranie"
 		chatData := chat.ChatroomAllData(session, chatroom)
-		comnents := Comnets{Response: chatData}
+		comnents := Comments{Response: chatData}
 
 		log.Println("all data :", comnents)
 		c.JSON(http.StatusOK, comnents)
@@ -152,7 +146,7 @@ func main() {
 
 }
 
-func initApp() (chat.Env, *gocql.Session, chat.Chat) {
+func initApp() (chat.Env, *gocql.Session, chat.Comment) {
 	env := chat.GetEnvValue()
 
 	if env.AppEnv == "prd" || env.AppEnv == "production" {
