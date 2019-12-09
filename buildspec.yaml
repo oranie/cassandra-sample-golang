@@ -19,6 +19,9 @@ phases:
       - GO111MODULE=off go get -u "github.com/oranie/cassandra-sample-golang"
       - patch --ignore-whitespace -u /root/go/src/github.com/gocql/gocql/conn.go < diff.patch
       - head -n 50 /root/go/src/github.com/gocql/gocql/conn.go
+      - find / -name gocql.a
+      - ls -lR /root/go/pkg/
+      - rm -f /root/go/pkg/github.com/gocql/gocql/gocql.a
       - GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build ./main.go
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
