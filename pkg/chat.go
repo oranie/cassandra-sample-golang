@@ -1,4 +1,4 @@
-package chat
+package pkg
 
 import (
 	"crypto/rand"
@@ -10,7 +10,7 @@ import (
 	"github.com/gocql/gocql"
 )
 
-type Chat struct {
+type Comment struct {
 	Name     string `form:"name" json:"name"`
 	Time     int64  `form:"time" json:"time"`
 	Chatroom string `form:"chatroom" json:"chatroom"`
@@ -18,7 +18,7 @@ type Chat struct {
 }
 
 // Insert test data
-func InsertData(session *gocql.Session, chatData *Chat) *Chat {
+func InsertData(session *gocql.Session, chatData *Comment) *Comment {
 	log.Printf("Insert test data....%v %v", chatData, chatData)
 	if err := session.Query(`INSERT INTO chat (name,time,chatroom,comment) VALUES (?,?,?,?)`,
 		chatData.Name,
@@ -32,9 +32,9 @@ func InsertData(session *gocql.Session, chatData *Chat) *Chat {
 }
 
 //Get Insert data
-func SelectTestData(session *gocql.Session, chatData *Chat) Chat {
+func SelectTestData(session *gocql.Session, chatData *Comment) Comment {
 	log.Println("Select insert test data....")
-	var selectChatData Chat
+	var selectChatData Comment
 	if err := session.Query(`SELECT name,time,chatroom,comment FROM chat where name = ?`,
 		chatData.Name).Consistency(gocql.One).Scan(
 		&selectChatData.Name,
@@ -48,11 +48,11 @@ func SelectTestData(session *gocql.Session, chatData *Chat) Chat {
 	return selectChatData
 }
 
-func ChatroomLatestData(session *gocql.Session, chatroom string) []Chat {
+func ChatroomLatestData(session *gocql.Session, chatroom string) []Comment {
 	// list all chat
 	//log.Println("Select Latest table data...")
-	var ChatData Chat
-	selectAllChatData := []Chat{}
+	var ChatData Comment
+	selectAllChatData := []Comment{}
 	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ? LIMIT 25 ALLOW FILTERING  `, chatroom).Iter()
 	for iter.Scan(
 		&ChatData.Name,
@@ -71,11 +71,11 @@ func ChatroomLatestData(session *gocql.Session, chatroom string) []Chat {
 	return selectAllChatData
 }
 
-func ChatroomAllData(session *gocql.Session, chatroom string) []Chat {
+func ChatroomAllData(session *gocql.Session, chatroom string) []Comment {
 	// list all chat
 	//log.Println("Select all table CQL...")
-	var ChatData Chat
-	selectAllChatData := []Chat{}
+	var ChatData Comment
+	selectAllChatData := []Comment{}
 	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ? ALLOW FILTERING `, chatroom).Iter()
 	for iter.Scan(
 		&ChatData.Name,
@@ -95,11 +95,11 @@ func ChatroomAllData(session *gocql.Session, chatroom string) []Chat {
 }
 
 // list all chat
-func AllSelectData(session *gocql.Session) []Chat {
+func AllSelectData(session *gocql.Session) []Comment {
 	// list all chat
 	log.Println("Select all table data...")
-	var ChatData Chat
-	selectAllChatData := []Chat{}
+	var ChatData Comment
+	selectAllChatData := []Comment{}
 	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat`).Iter()
 	for iter.Scan(
 		&ChatData.Name,
@@ -118,10 +118,10 @@ func AllSelectData(session *gocql.Session) []Chat {
 }
 
 // generate random test data
-func GenerateChatData() Chat {
+func GenerateChatData() Comment {
 	now := time.Now()
 
-	chatData := Chat{}
+	chatData := Comment{}
 	randomString := random()
 	chatData.Name = "oranie-" + randomString
 	chatData.Time = now.UnixNano()

@@ -10,11 +10,18 @@ import (
 	"regexp"
 	"time"
 
-	"./internal/pkg"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gocql/gocql"
+	"github.com/oranie/cassandra-sample-golang/pkg"
 )
+
+type Comment struct {
+	Name     string `form:"name" json:"name"`
+	Time     int64  `form:"time" json:"time"`
+	Chatroom string `form:"chatroom" json:"chatroom"`
+	Comment  string `form:"comment" json:"comment"`
+}
 
 type Comnets struct {
 	Response []chat.Chat `form:"name" json:"response"`
@@ -86,7 +93,7 @@ func main() {
 	})
 
 	r.POST("/chat/comments/add", func(c *gin.Context) {
-		var json chat.Chat
+		var json Comnets
 		if err := c.ShouldBindJSON(&json); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
