@@ -9,6 +9,8 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - export GOPATH=${HOME}/go && echo ${GOPATH}
+      - export PATH=/usr/local/go/bin:${GOPATH}/bin:${PATH} && echo ${PATH}
   build:
     commands:
       - echo Build started on `date`
