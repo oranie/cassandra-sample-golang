@@ -15,6 +15,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
+      - docker images
       - go get -u "github.com/oranie/cassandra-sample-golang"
       - GOOS=linux GOARCH=amd64  go build ./main.go
       - docker build -t $IMAGE_REPO_NAME .
