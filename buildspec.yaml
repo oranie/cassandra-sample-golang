@@ -16,7 +16,6 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker images
-      - GO111MODULE=off go get -u "github.com/oranie/cassandra-sample-golang"
       - patch --ignore-whitespace -u /root/go/src/github.com/gocql/gocql/conn.go < diff.patch
       - head -n 50 /root/go/src/github.com/gocql/gocql/conn.go
       - find / -name gocql.a
