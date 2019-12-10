@@ -9,3 +9,13 @@ index 209eddf..7405222 100644
 +               "com.amazon.helenus.auth.HelenusAuthenticator",
         }
  )
+
+@@ -1441,7 +1441,7 @@ func (c *Conn) awaitSchemaAgreement(ctx context.Context) (err error) {
+ func (c *Conn) localHostInfo(ctx context.Context) (*HostInfo, error) {
+        row, err := c.query(ctx, "SELECT * FROM system.local WHERE key='local'").rowMap()
+        if err != nil {
+-               return nil, err
++               //return nil, err
+        }
+
+        port := c.conn.RemoteAddr().(*net.TCPAddr).Port

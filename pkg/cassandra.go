@@ -29,11 +29,11 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	env := GetEnvValue()
 	log.Println("create session env :", env)
 	cluster, _ := CreateSessionConf(env)
-
+	log.Println("cluster.DisableInitialHostLookup", cluster.DisableInitialHostLookup)
 	session, error := cluster.CreateSession()
 	if error != nil {
-		log.Printf("Error: connect cassandra cluster : %v", cluster)
-		panic(error.Error())
+		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, error)
+		panic(error)
 	}
 
 	return session, error
@@ -73,7 +73,6 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 	cluster.Keyspace = env.CassandraKeyspace
 	cluster.Consistency = gocql.Quorum
 	cluster.Port = env.CassandraPort
-	cluster.DisableInitialHostLookup = true
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
 		Username: env.CassandraUserName,
