@@ -25,7 +25,8 @@ Docker version 19.03.5, build 633a0ea
 ### local app start
 
 # Production Deploy
-## 1st step : IAM
+## 1st step : create service IAM credentials
+
 
 ## 2nd step : Check your generate APIGateway URL
 

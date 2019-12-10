@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -37,12 +36,14 @@ func main() {
 
 	r.Use(cors.Default())
 
+	//Server status check endpoint.
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "server status id good",
 		})
 	})
 
+	//Insert test data and select.
 	r.GET("/run-test", func(c *gin.Context) {
 		if &chatData != nil {
 			chatData = chat.GenerateChatData()
@@ -121,20 +122,6 @@ func main() {
 
 		log.Println("all data :", comnents)
 		c.JSON(http.StatusOK, comnents)
-	})
-
-	r.GET("/insertstatus", func(c *gin.Context) {
-		chatData := chat.SelectTestData(session, &chatData)
-		c.JSON(http.StatusOK, chatData)
-	})
-
-	r.GET("/alldata", func(c *gin.Context) {
-		allChatData := chat.AllSelectData(session)
-		json, err := json.Marshal(allChatData)
-		if err != nil {
-			panic(err)
-		}
-		c.String(http.StatusOK, string(json))
 	})
 
 	portString := ":" + env.AppPort
