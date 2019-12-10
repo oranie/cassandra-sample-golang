@@ -22,23 +22,6 @@ type Env struct {
 	CassandraKeyspace string `envconfig:"CASSANDRA_KS" default:"example"`
 }
 
-// connect to the cluster
-// My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
-// example ssh ssh.host -L 9042:cassandra.host:9042
-func CreateCassandraSession() (*gocql.Session, error) {
-	env := GetEnvValue()
-	log.Println("create session env :", env)
-	cluster, _ := CreateSessionConf(env)
-	log.Println("cluster.DisableInitialHostLookup", cluster.DisableInitialHostLookup)
-	session, error := cluster.CreateSession()
-	if error != nil {
-		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, error)
-		panic(error)
-	}
-
-	return session, error
-}
-
 func GetEnvValue() Env {
 	var env Env
 	err := envconfig.Process("", &env)
@@ -98,6 +81,23 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 	}
 
 	return cluster, env
+}
+
+// connect to the cluster
+// My envroiment : local laptop need to connect cassandra cluster with ssh tunnel
+// example ssh ssh.host -L 9042:cassandra.host:9042
+func CreateCassandraSession() (*gocql.Session, error) {
+	env := GetEnvValue()
+	log.Println("create session env :", env)
+	cluster, _ := CreateSessionConf(env)
+	log.Println("cluster.DisableInitialHostLookup", cluster.DisableInitialHostLookup)
+	session, error := cluster.CreateSession()
+	if error != nil {
+		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, error)
+		panic(error)
+	}
+
+	return session, error
 }
 
 // create chat table
