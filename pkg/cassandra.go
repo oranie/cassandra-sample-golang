@@ -48,7 +48,7 @@ func GetEnvValue() Env {
 	return env
 }
 
-func InitApp() (Env, *gocql.Session, Comment) {
+func InitApi() (Env, *gocql.Session, Comment) {
 	env := GetEnvValue()
 
 	if env.AppEnv == "prd" || env.AppEnv == "production" {
@@ -60,12 +60,19 @@ func InitApp() (Env, *gocql.Session, Comment) {
 		fmt.Println(error)
 	}
 
-	//check and create chat table
-	CreateChatTable(session)
-
 	//generate test data
 	chatData := GenerateChatData()
 	return env, session, chatData
+}
+
+func InitGinApp(r *gin.Engine) {
+	session, error := CreateCassandraSession()
+	if error != nil {
+		fmt.Println(error)
+	}
+
+	//check and create chat table
+	CreateChatTable(session)
 }
 
 func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {

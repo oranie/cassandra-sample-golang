@@ -17,6 +17,10 @@ type Comment struct {
 	Comment  string `form:"comment" json:"comment"`
 }
 
+type Comments struct {
+	Response []Comment `form:"name" json:"response"`
+}
+
 // Insert test data
 func InsertData(session *gocql.Session, chatData *Comment) *Comment {
 	log.Printf("Insert test data....%v %v", chatData, chatData)
