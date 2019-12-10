@@ -102,13 +102,27 @@ func CreateCassandraSession() (*gocql.Session, error) {
 
 // create chat table
 func CreateChatTable(session *gocql.Session) {
-	log.Println("Create chat table progress.......")
+	log.Println("Create chat(PK:name,time)  table progress.......")
 	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
 		name text,
 		time bigint,
 		chatroom text,
 		comment text,
 		PRIMARY KEY (name, time)) 
+		WITH CLUSTERING ORDER BY (time DESC);`).Exec(); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Create chat table done!")
+}
+
+func CreatePKChatroomTable(session *gocql.Session) {
+	log.Println("Create chat(PK:chatroom,time) table progress.......")
+	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
+		name text,
+		time bigint,
+		chatroom text,
+		comment text,
+		PRIMARY KEY (chatroom, time)) 
 		WITH CLUSTERING ORDER BY (time DESC);`).Exec(); err != nil {
 		log.Fatal(err)
 	}
