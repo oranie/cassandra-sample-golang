@@ -27,7 +27,7 @@ type Env struct {
 // example ssh ssh.host -L 9042:cassandra.host:9042
 func CreateCassandraSession() (*gocql.Session, error) {
 	env := GetEnvValue()
-	log.Println("create session env :")
+	log.Println("create session env :", env)
 	cluster, _ := CreateSessionConf(env)
 
 	session, error := cluster.CreateSession()
