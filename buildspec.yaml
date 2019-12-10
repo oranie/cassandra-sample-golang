@@ -28,8 +28,8 @@ phases:
       - docker images
       - #docker run  -e  CASSANDRA_ENDPOINT="cassandra.ap-northeast-1.amazonaws.com"
       - wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.21.0
-      - golangci-lint --version
-      - golangci-lint run
+      - ./bin/golangci-lint --version
+      - ./bin/golangci-lint run
 
   post_build:
     commands:
