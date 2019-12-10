@@ -15,10 +15,8 @@ Realtime Comment Demo App
 
 ## Envroiment
 golang 1.13
+Docker version 19.03.5, build 633a0ea
 
-If you set API_ENDPOINT environment value 'localhost' is using DynamoDB Local 
- (ex: export API_ENDPOINT=localhost)
- 
 # Cassandra setting
 
 
@@ -27,17 +25,16 @@ If you set API_ENDPOINT environment value 'localhost' is using DynamoDB Local
 ### local app start
 
 # Production Deploy
-##1st step : 1st chalice deploy
+## 1st step : IAM
 
 ## 2nd step : Check your generate APIGateway URL
-
 
 ## 3rd step : set to your api endpoint URL
 
 ## 4th step : 2nd chalice deploy
 
 
-## Python Test
+## golang Test
 
 
 ## Data Modeling
@@ -45,15 +42,11 @@ Data Modeling:
 
 |name(PK)  |time(SK)  |comment  |chat_room |
 |---|---|---|---|
-|string  |string(micro sec unixtime)  |string  |string |string|
-
-GSI
+|text  |text(micro sec unixtime)  |text  |text |
 
 |chat_room(PK)  |time(SK)  |comment  |name |
 |---|---|---|---|
-|string  |string(micro sec unixtime)  |string  |string |
-
-
+|text  |text(micro sec unixtime)  |text  |text |
 
 ## API
 
