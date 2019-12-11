@@ -35,7 +35,7 @@ docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REP
 
 ## Setting
 
-|EnvroimentName|Value|Default value|
+|EnvroimentName|Description|Default value|
 |---|---|---|
 |CASSANDRA_ENDPOINT |Cassandra cluster endpoint(ip or domain)|127.0.0.1|
 |CASSANDRA_USER|Cassandra cluster user|cassandra|
