@@ -4,10 +4,9 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/oranie/cassandra-sample-golang/pkg"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/oranie/cassandra-sample-golang/pkg"
 )
 
 func main() {

@@ -54,7 +54,7 @@ func InitGinApp(r *gin.Engine) {
 		fmt.Println(error)
 	}
 
-	//check and create chat table
+	//if not exist table, create chat table
 	CreateChatTable(session)
 }
 
