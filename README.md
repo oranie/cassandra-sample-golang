@@ -32,18 +32,24 @@ If you need to run app on CI/CD,test and prpduction envroiment.Please overwrite 
 |APP_ENDPOINT|Chat App use Endpoint|http://127.0.0.1|
 |APP_PORT |Chat App use network port|8080|
 |APP_ENV|App run envroiment|test|
+|Build setting|||
+|IMAGE_REPO_NAME|Docker container repogitory name.||
+|IMAGE_TAG|Docker container tag||
+|AWS_DEFAULT_REGION|Docker container repogitory region||
+|AWS_ACCOUNT_ID|for Docker container repogitory ||
 
-## Build
+## Local app start
 ```shell script
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build ./main.go
-docker build -t $IMAGE_REPO_NAME .
-docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+go run ./main.go
 ```
 
-This operation is written in buildspec.yaml for codebuild.
+note: If you need to connect remote cassandra cluster, It might be a good idea to use an SSH tunnel.
+```shell script
+ssh ${SSH_TUNNEL_HOST} -L 9042:${CASSANDRA.ENDPOINT}:9042
+```
 
-## Deploy
+
+## Build and Deploy
 This project build docker container.Any environment where containers and Cassandra can run is OK.
 Example using ECR, ECS Fargate, Amazon MCS.
 
@@ -85,42 +91,52 @@ CREATE KEYSPACE IF NOT EXISTS example WITH REPLICATION={'class': 'SingleRegionSt
 ## Create ECR repository
 https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/ECR_AWSCLI.html
 
-
-### local app start
+## Build and push container image(example Amazon ECR)
 ```shell script
-go run ./main.go
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build ./main.go
+docker build -t $IMAGE_REPO_NAME .
+docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
 ```
 
-memo:If you need to connecxt remote cassandra cluster,It might be a good idea to use an SSH tunnel.
-```shell script
-ssh ${SSH_TUNNEL_HOST} -L 9042:${CASSANDRA.ENDPOINT}:9042
-```
+This operation is written in buildspec.yaml for codebuild.
 
-# Production Deploy
-## 1st step : create service IAM credentials
+## CodeBuild
+https://docs.aws.amazon.com/ja_jp/codebuild/latest/userguide/sample-docker.html
 
-## 2nd step : 
+## Create ECS Fargate Cluster
+https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/ECS_GetStarted_Fargate.html
 
-## 3rd step : 
+### Create ECS task difinition
 
-## 4th step : 
+### Create ECS Service
 
-
-## golang Test
-
+If you run 1 container task, not need ALB or NLB.
 
 ## Data Modeling
 Data Modeling:
+
+Pattern 1
 
 |name(PK)  |time(clustering column)  |comment  |chat_room |
 |---|---|---|---|
 |text  |text(micro sec unixtime)  |text  |text |
 
+Pattern 2
+
 |chat_room(PK)  |time(clustering column)  |comment  |name |
 |---|---|---|---|
 |text  |text(micro sec unixtime)  |text  |text |
 
-## API
+## API List
+
+* /
+
+Return server status.
+
+* /run-test
+
+return  test data insert and select result.
 
 * /chat
 
