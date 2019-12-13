@@ -59,7 +59,7 @@ https://docs.aws.amazon.com/mcs/latest/devguide/accessing.html
 
 https://docs.aws.amazon.com/mcs/latest/devguide/getting-started.html
 
-Create Cassandra user
+Create Cassandra connect user
 ```
 aws iam create-service-specific-credential --user-name USERNAME --service-name cassandra.amazonaws.com
 ```
@@ -87,6 +87,11 @@ Create KeySpace(This app auto create table.)
 
 CREATE KEYSPACE IF NOT EXISTS example WITH REPLICATION={'class': 'SingleRegionStrategy'};
 ```
+
+If you want run Cassandra node on EC2, This project ./cassandra_conf_sample/cassandra.yaml may be helpful, 
+Using Docker containers is also effective
+
+https://hub.docker.com/_/cassandra
 
 ## Create ECR repository
 https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/ECR_AWSCLI.html
