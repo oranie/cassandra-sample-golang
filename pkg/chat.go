@@ -80,7 +80,7 @@ func ChatroomAllData(session *gocql.Session, chatroom string) []Comment {
 	//log.Println("Select all table CQL...")
 	var ChatData Comment
 	selectAllChatData := []Comment{}
-	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ? DESC ALLOW FILTERING `, chatroom).Iter()
+	iter := session.Query(`SELECT name,time,chatroom,comment FROM chat WHERE chatroom = ?  ALLOW FILTERING `, chatroom).Iter()
 	for iter.Scan(
 		&ChatData.Name,
 		&ChatData.Time,
