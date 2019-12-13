@@ -28,7 +28,7 @@ func InsertData(session *gocql.Session, chatData *Comment) *Comment {
 		chatData.Name,
 		chatData.Time,
 		chatData.Chatroom,
-		chatData.Comment+time.Now().String()).Exec(); err != nil {
+		chatData.Comment+" : "+time.Now().String()).Exec(); err != nil {
 		log.Println(err)
 	}
 	log.Println("Insert test data done!")
