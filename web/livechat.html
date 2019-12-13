@@ -62,7 +62,7 @@
 </div>
 
 <div id="latest">
-    <div class="border-top">Latest comment list(Auto reload: 3sec period)</div>
+    <div class="border-top">Latest comment list</div>
     <button v-on:click="get_latest" class="btn btn-primary">latest comments</button>
 
 
@@ -185,13 +185,13 @@
                 ;
             }
         },
-
+        /*
         mounted: function () {
             setInterval(this.get_latest, 3000)
         },
         destroyed: function () {
         }
-
+        */
     });
 </script>
 
