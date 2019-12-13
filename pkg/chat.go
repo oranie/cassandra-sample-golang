@@ -130,7 +130,7 @@ func GenerateChatData() Comment {
 	chatData.Name = "oranie-" + randomString
 	chatData.Time = now.UnixNano()
 	//chatData.Chatroom = "game_room-" + randomString
-	chatData.Chatroom = "game_room-" + "oranie"
+	chatData.Chatroom = "room-" + "oranie"
 	chatData.Comment = "test comment : " + now.String()
 
 	return chatData

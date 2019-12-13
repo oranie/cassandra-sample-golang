@@ -74,7 +74,7 @@ func PostInsertChatData(c *gin.Context) {
 	postData := Comment{
 		Name:     json.Name,
 		Time:     time.Now().UnixNano(),
-		Chatroom: "game_room-oranie",
+		Chatroom: "room-oranie",
 		Comment:  json.Comment,
 	}
 
@@ -86,7 +86,7 @@ func PostInsertChatData(c *gin.Context) {
 
 func GetLatestChatData(c *gin.Context) {
 	_, session, _ := InitApi()
-	chatroom := "game_room-oranie"
+	chatroom := "room-oranie"
 	chatData := ChatroomLatestData(session, chatroom)
 	comnents := Comments{Response: chatData}
 
@@ -96,7 +96,7 @@ func GetLatestChatData(c *gin.Context) {
 
 func GetAllChatData(c *gin.Context) {
 	_, session, _ := InitApi()
-	chatroom := "game_room-oranie"
+	chatroom := "room-oranie"
 	chatData := ChatroomAllData(session, chatroom)
 	comnents := Comments{Response: chatData}
 
