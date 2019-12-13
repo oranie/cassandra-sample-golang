@@ -55,7 +55,7 @@ func InitGinApp(r *gin.Engine) {
 	}
 
 	//if not exist table, create chat table
-	CreateChatTable(session)
+	CreatePKChatroomTable(session)
 }
 
 func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
@@ -101,7 +101,7 @@ func CreateCassandraSession() (*gocql.Session, error) {
 }
 
 // create chat table
-func CreateChatTable(session *gocql.Session) {
+func CreatePKNameTable(session *gocql.Session) {
 	log.Println("Create chat(PK:name,time)  table progress.......")
 	if err := session.Query(`CREATE TABLE IF NOT EXISTS chat (
 		name text,
