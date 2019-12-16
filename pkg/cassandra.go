@@ -69,10 +69,10 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 		Password: env.CassandraUserPass,
 	}
 
-	// local env check
-	localCheck := regexp.MustCompile(`localhost|127.0.0.1`)
-	if !localCheck.MatchString(env.CassdraEndpoint) {
-		log.Println("not localhost|127.0.0.1 envroiment")
+	// Amazon MCS check
+	AmazonMCSCheck := regexp.MustCompile(`cassandra.*.amazonaws.com`)
+	if AmazonMCSCheck.MatchString(env.CassdraEndpoint) {
+		log.Println("This setting connect to Amazon MCS")
 		cluster.DisableInitialHostLookup = true
 		cluster.SslOpts = &gocql.SslOptions{
 			CaPath:                 "./AmazonRootCA1.pem",
