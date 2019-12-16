@@ -51,7 +51,7 @@ func InitApi() (Env, *gocql.Session, Comment) {
 func InitGinApp(r *gin.Engine) {
 	session, error := CreateCassandraSession()
 	if error != nil {
-		fmt.Println(error)
+		log.Println(error)
 	}
 
 	//if not exist table, create chat table

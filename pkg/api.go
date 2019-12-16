@@ -1,7 +1,6 @@
 package chat
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -36,7 +35,7 @@ func GetHTMLPage(c *gin.Context) {
 	env, _, _ := InitApi()
 	f, err := os.Open("./web/livechat.html")
 	if err != nil {
-		fmt.Println("file read error", err)
+		log.Println("file read error", err)
 	}
 	defer f.Close()
 	b, err := ioutil.ReadAll(f)
@@ -78,7 +77,7 @@ func PostInsertChatData(c *gin.Context) {
 		Comment:  json.Comment,
 	}
 
-	fmt.Printf("%v", json)
+	log.Printf("%v", json)
 	resp := InsertData(session, &postData)
 
 	c.JSON(http.StatusOK, resp)
