@@ -61,7 +61,7 @@ func InitGinApp(r *gin.Engine) {
 func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 	cluster := gocql.NewCluster(env.CassdraEndpoint)
 	cluster.Keyspace = env.CassandraKeyspace
-	cluster.Consistency = gocql.Quorum
+	cluster.Consistency = gocql.LocalQuorum
 	cluster.Port = env.CassandraPort
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
