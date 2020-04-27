@@ -79,7 +79,7 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 			EnableHostVerification: false,
 		}
 	}
-
+	log.Println("CreateSessionConf is", cluster)
 	return cluster, env
 }
 
@@ -90,14 +90,15 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	env := GetEnvValue()
 	log.Println("create session env :", env)
 	cluster, _ := CreateSessionConf(env)
-	log.Println("cluster.DisableInitialHostLookup", cluster.DisableInitialHostLookup)
-	session, error := cluster.CreateSession()
-	if error != nil {
-		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, error)
-		panic(error)
+	log.Println("Create cluster conf is :", cluster.Consistency.String())
+	cluster.Consistency = gocql.LocalOne
+	session, con_error := cluster.CreateSession()
+	if con_error != nil {
+		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, con_error)
+		panic(con_error)
 	}
 
-	return session, error
+	return session, con_error
 }
 
 // create chat table

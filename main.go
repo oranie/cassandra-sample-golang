@@ -12,6 +12,7 @@ import (
 func main() {
 	r := gin.Default()
 	env := chat.GetEnvValue()
+	log.Println("initial execute done.")
 	chat.InitGinApp(r)
 
 	ApiEndpoint := "http://localhost:" + env.AppPort + "/"
