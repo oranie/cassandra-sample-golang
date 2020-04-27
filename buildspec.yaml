@@ -11,6 +11,12 @@ phases:
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - export GOPATH=${HOME}/go && echo ${GOPATH}
       - export PATH=/usr/local/go/bin:${GOPATH}/bin:${PATH} && echo ${PATH}
+      - go get -d github.com/gocql/gocql
+      - echo `find / -name conn.go|tail -n 1`
+      - echo `find / -name gocql.a`
+      - patch --ignore-whitespace -u  `find / -name conn.go|tail -n 1` < diff.patch
+      - head -n 50 `find / -name conn.go|tail -n 1`
+      - rm -f `find / -name gocql.a`
   build:
     commands:
       - echo Build started on `date`
