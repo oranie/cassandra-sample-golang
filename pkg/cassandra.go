@@ -88,10 +88,10 @@ func CreateSessionConf(env Env) (*gocql.ClusterConfig, Env) {
 // example ssh ssh.host -L 9042:cassandra.host:9042
 func CreateCassandraSession() (*gocql.Session, error) {
 	env := GetEnvValue()
-	log.Println("create session env :", env)
+
 	cluster, _ := CreateSessionConf(env)
-	log.Println("Create cluster conf is :", cluster.Consistency.String())
 	session, con_error := cluster.CreateSession()
+	log.Println("cluster setting is  :", cluster)
 	if con_error != nil {
 		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, con_error)
 		panic(con_error)

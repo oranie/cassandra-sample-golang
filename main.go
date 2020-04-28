@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"regexp"
 
 	"github.com/gin-contrib/cors"
@@ -10,6 +11,9 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
+	log.SetOutput(os.Stdout)
+
 	r := gin.Default()
 	env := chat.GetEnvValue()
 	log.Println("initial execute done.")
