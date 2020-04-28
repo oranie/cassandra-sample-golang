@@ -39,7 +39,7 @@ func InsertData(session *gocql.Session, chatData *Comment) *Comment {
 func SelectTestData(session *gocql.Session, chatData *Comment) Comment {
 	log.Println("Select insert test data....")
 	var selectChatData Comment
-	if err := session.Query(`SELECT name,time,chatroom,comment FROM chat where name = ?`,
+	if err := session.Query(`SELECT name,time,chatroom,comment FROM chat where name = ? ALLOW FILTERING`,
 		chatData.Name).Consistency(gocql.One).Scan(
 		&selectChatData.Name,
 		&selectChatData.Time,

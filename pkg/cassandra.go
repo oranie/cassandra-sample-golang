@@ -91,7 +91,6 @@ func CreateCassandraSession() (*gocql.Session, error) {
 	log.Println("create session env :", env)
 	cluster, _ := CreateSessionConf(env)
 	log.Println("Create cluster conf is :", cluster.Consistency.String())
-	cluster.Consistency = gocql.LocalOne
 	session, con_error := cluster.CreateSession()
 	if con_error != nil {
 		log.Printf("Error: connect cassandra cluster : %v %v %v", cluster, session, con_error)
