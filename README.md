@@ -19,10 +19,10 @@ golang 1.13
 
 Docker version 19.03.5, build 633a0ea
 
-## Envroiment Setting
-If you need to run app on CI/CD,test and prpduction envroiment.Please overwrite these value.
+## Environment Setting
+If you need to run app on CI/CD,test and prpduction environment.Please overwrite these value.
 
-|EnvroimentName|Description|Default value|
+|EnvironmentName|Description|Default value|
 |---|---|---|
 |CASSANDRA_ENDPOINT |Cassandra cluster endpoint(ip or domain)|127.0.0.1|
 |CASSANDRA_USER|Cassandra cluster user|cassandra|
