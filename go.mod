@@ -3,7 +3,7 @@ module github.com/oranie/cassandra-sample-golang
 require (
 	github.com/bitly/go-hostpool v0.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.7.7
 	github.com/gocql/gocql v0.0.0-20200410100145-b454769479c6
 	github.com/golang/protobuf v1.4.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
